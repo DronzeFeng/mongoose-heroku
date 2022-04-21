@@ -1,6 +1,6 @@
 const headers = require('./headers');
 
-function errorHandie(res, err) {
+function errorHandle(res, err) {
   let message = '';
 
   if (err) {
@@ -19,4 +19,4 @@ function errorHandie(res, err) {
   res.end();
 }
 
-module.exports = errorHandie;
+module.exports = errorHandle;

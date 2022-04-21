@@ -2,7 +2,7 @@ const http = require('http');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const headers = require('./headers');
-const errorHandie = require('./errorHandl');
+const errorHandle = require('./errorHandle');
 const successHandle = require('./successHandle');
 const Room = require('./models/room');
 dotenv.config({ path: './config.env' });
@@ -42,10 +42,10 @@ const requestListener = async (req, res) => {
 
           successHandle(res, newRoom);
         } else {
-          errorHandie(res);
+          errorHandle(res);
         }
       } catch (error) {
-        errorHandie(res, error);
+        errorHandle(res, error);
       }
     });
   } else if (req.url == '/rooms' && req.method == 'DELETE') {
@@ -60,7 +60,7 @@ const requestListener = async (req, res) => {
         successHandle(res, rooms);
       })
       .catch((error) => {
-        errorHandie(res, error);
+        errorHandle(res, error);
       });
   } else if (req.url.startsWith('/rooms/') && req.method === 'PATCH') {
     req.on('end', async () => {
@@ -75,13 +75,13 @@ const requestListener = async (req, res) => {
               successHandle(res, rooms);
             })
             .catch((error) => {
-              errorHandie(res, error);
+              errorHandle(res, error);
             });
         } else {
-          errorHandie(res);
+          errorHandle(res);
         }
       } catch (error) {
-        errorHandie(res, error);
+        errorHandle(res, error);
       }
     });
   } else if (req.method === 'OPTIONS') {
