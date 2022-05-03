@@ -79,7 +79,7 @@ const requestListener = async (req, res) => {
         const data = JSON.parse(body);
 
         if (data !== undefined && data.content !== '') {
-          Post.findByIdAndUpdate(id, data)
+          Post.findByIdAndUpdate(id, data, { new: true })
             .then(async (data) => {
               const posts = await Post.find();
 
