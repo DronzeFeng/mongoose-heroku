@@ -60,10 +60,14 @@ const requestListener = async (req, res) => {
     const id = req.url.split('/').pop();
 
     Post.findByIdAndDelete(id)
-      .then(async () => {
+      .then(async (data) => {
         const posts = await Post.find();
 
-        successHandle(res, posts);
+        if (data === null) {
+          errorHandle(res);
+        } else {
+          successHandle(res, posts);
+        }
       })
       .catch((error) => {
         errorHandle(res, error);
@@ -76,9 +80,14 @@ const requestListener = async (req, res) => {
 
         if (data !== undefined && data.content !== '') {
           Post.findByIdAndUpdate(id, data)
-            .then(async () => {
+            .then(async (data) => {
               const posts = await Post.find();
-              successHandle(res, posts);
+
+              if (data === null) {
+                errorHandle(res);
+              } else {
+                successHandle(res, posts);
+              }
             })
             .catch((error) => {
               errorHandle(res, error);
