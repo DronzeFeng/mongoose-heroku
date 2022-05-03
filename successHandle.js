@@ -5,7 +5,7 @@ function successHandle(res, data) {
   res.write(
     JSON.stringify({
       status: 'Success',
-      rooms: data,
+      posts: data,
     })
   );
   res.end();

@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const headers = require('./headers');
 const errorHandle = require('./errorHandle');
 const successHandle = require('./successHandle');
-const Room = require('./models/room');
+const Post = require('./models/post');
 dotenv.config({ path: './config.env' });
 const dbPath = process.env.DB_PATH.replace(
   '<password>',
@@ -26,21 +26,25 @@ const requestListener = async (req, res) => {
     body += chunck;
   });
 
-  if (req.url == '/rooms' && req.method == 'GET') {
-    const rooms = await Room.find();
-    successHandle(res, rooms);
-  } else if (req.url == '/rooms' && req.method == 'POST') {
+  if (req.url == '/posts' && req.method == 'GET') {
+    const posts = await Post.find();
+
+    successHandle(res, posts);
+  } else if (req.url == '/posts' && req.method == 'POST') {
     req.on('end', async () => {
       try {
         const data = JSON.parse(body);
-        if (data.price) {
-          const newRoom = await Room.create({
+
+        if (data !== undefined) {
+          const newPost = await Post.create({
+            content: data.content,
+            image: data.image,
+            createdAt: data.createdAt,
             name: data.name,
-            price: data.price,
-            rating: data.rating,
+            likes: data.likes,
           });
 
-          successHandle(res, newRoom);
+          successHandle(res, newPost);
         } else {
           errorHandle(res);
         }
@@ -48,31 +52,33 @@ const requestListener = async (req, res) => {
         errorHandle(res, error);
       }
     });
-  } else if (req.url == '/rooms' && req.method == 'DELETE') {
-    const rooms = await Room.deleteMany({});
-    successHandle(res, rooms);
-  } else if (req.url.startsWith('/rooms/') && req.method === 'DELETE') {
+  } else if (req.url == '/posts' && req.method == 'DELETE') {
+    const posts = await Post.deleteMany({});
+
+    successHandle(res, posts);
+  } else if (req.url.startsWith('/posts/') && req.method === 'DELETE') {
     const id = req.url.split('/').pop();
 
-    Room.findByIdAndDelete(id)
+    Post.findByIdAndDelete(id)
       .then(async () => {
-        const rooms = await Room.find();
-        successHandle(res, rooms);
+        const posts = await Post.find();
+
+        successHandle(res, posts);
       })
       .catch((error) => {
         errorHandle(res, error);
       });
-  } else if (req.url.startsWith('/rooms/') && req.method === 'PATCH') {
+  } else if (req.url.startsWith('/posts/') && req.method === 'PATCH') {
     req.on('end', async () => {
       try {
         const id = req.url.split('/').pop();
         const data = JSON.parse(body);
 
-        if (data !== undefined) {
-          Room.findByIdAndUpdate(id, data)
+        if (data !== undefined && data.content !== '') {
+          Post.findByIdAndUpdate(id, data)
             .then(async () => {
-              const rooms = await Room.find();
-              successHandle(res, rooms);
+              const posts = await Post.find();
+              successHandle(res, posts);
             })
             .catch((error) => {
               errorHandle(res, error);
@@ -101,4 +107,4 @@ const requestListener = async (req, res) => {
 };
 
 const server = http.createServer(requestListener);
-server.listen(process.env.PORT);
+server.listen(process.env.PORT || 3005);
